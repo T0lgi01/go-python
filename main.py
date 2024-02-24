@@ -9,10 +9,10 @@ class Board:
         self.checked = []
 
     def __repr__(self):
-        for i in range(19):
-            for j in range(19):
-                which = self.Board[i][j] + 3*int((i%6, j%6, self.Board[i][j]) == (3, 3, EMPTY))
-                print(".#O*"[which], end = " \n"[int(j % 19 == 18)])
+        for k in range(361):
+            i, j = divmod(k, 19)
+            which = self.Board[i][j] + 3*int((i%6, j%6, self.Board[i][j]) == (3, 3, EMPTY))
+            print(".#O*"[which], end = " \n"[int(j % 19 == 18)])
 
         print("Prisoners. B: {}, W: {}\nCurrent Move: {}".format(
             self.Black_Cap, self.White_Cap, ["BLACK", "WHITE"][self.Move_Color == WHITE]
@@ -72,10 +72,5 @@ def main():
     for move in moves:
         B.play_move(*move)
     B.__repr__()
-
-
-    
-    
-
 
 main()
