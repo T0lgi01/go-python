@@ -19,14 +19,13 @@ class Board:
     def has_liberty(self, x, y, checked = []):
         if (current_cell := self.Board[y][x]) == EMPTY: return True
         checked.append((x, y))
-        for k in range(4):
-            if not in_bounds(x_off := x + [0, 1, 0, -1][k], 
-                             y_off := y + [1, 0, -1, 0][k]): continue
-            if self.Board[y_off][x_off] == EMPTY \
+        for x_off, y_off in ((x, y+1), (x+1, y), (x, y-1), (x-1, y)):
+            if in_bounds(x_off, y_off) \
+                and (self.Board[y_off][x_off] == EMPTY \
                 or self.Board[y_off][x_off] == current_cell \
                 and (not (x_off, y_off) in checked) \
-                and self.has_liberty(x_off, y_off, checked):
-                    return True
+                and self.has_liberty(x_off, y_off, checked)):
+                return True
         return False
 
     def play_move(self, x, y):
@@ -37,11 +36,10 @@ class Board:
         
         self.Board[y][x] = self.Move_Color
         is_kill = False
-        for k in range(4):
-            if not in_bounds(x_off := x + [0, 1, 0, -1][k], 
-                             y_off := y + [1, 0, -1, 0][k]): continue
-            if self.Board[y_off][x_off] == self.Move_Color^3:
-                if self.has_liberty(x_off, y_off, checked := []): continue
+        for x_off, y_off in ((x, y+1), (x+1, y), (x, y-1), (x-1, y)):
+            if in_bounds(x_off, y_off) \
+                and self.Board[y_off][x_off] == self.Move_Color^3 \
+                and not self.has_liberty(x_off, y_off, checked := []):
                 is_kill = True
                 self.Cap[self.Move_Color == WHITE] += len(checked)
                 for stone_x, stone_y in checked:
