@@ -1,6 +1,6 @@
 EMPTY, BLACK, WHITE = 0, 1, 2
 
-def in_bounds(x, y): return 0 <= x < 19 > y >= 0
+def in_bounds(x, y): return 0<=x<19>y>=0
 
 class Board:
     def __init__(self):
@@ -11,20 +11,19 @@ class Board:
     def __repr__(self):
         for k in range(361):
             i, j = divmod(k, 19)
-            which = self.Board[i][j] + \
-                3*int((i%6, j%6, self.Board[i][j]) == (3, 3, EMPTY))
-            print(".#O*"[which], end = " \n"[int(j % 19 == 18)])
+            which = self.Board[i][j] + 3*((i%6, j%6) == (3, 3))
+            print(".#O*#O"[which], end = " \n"[j%19 == 18])
         print("Prisoners. B: {}, W: {}\nCurrent Move: {}".format(
             *self.Cap, ["BLACK", "WHITE"][self.Move_Color == WHITE]))
     
     def has_liberty(self, x, y, checked = []):
-        if (current_cell_color := self.Board[y][x]) == EMPTY: return True
+        if (current_cell := self.Board[y][x]) == EMPTY: return True
         checked.append((x, y))
         for k in range(4):
             if not in_bounds(x_off := x + [0, 1, 0, -1][k], 
                              y_off := y + [1, 0, -1, 0][k]): continue
             if self.Board[y_off][x_off] == EMPTY \
-                or self.Board[y_off][x_off] == current_cell_color \
+                or self.Board[y_off][x_off] == current_cell \
                 and (not (x_off, y_off) in checked) \
                 and self.has_liberty(x_off, y_off, checked):
                     return True
@@ -44,9 +43,9 @@ class Board:
             if self.Board[y_off][x_off] == self.Move_Color^3:
                 if self.has_liberty(x_off, y_off, checked := []): continue
                 is_kill = True
-                self.Cap[int(self.Move_Color == WHITE)] += len(checked)
-                for check in checked:
-                    self.Board[check[1]][check[0]] = EMPTY
+                self.Cap[self.Move_Color == WHITE] += len(checked)
+                for stone_x, stone_y in checked:
+                    self.Board[stone_y][stone_x] = EMPTY
         
         if not is_kill and not self.has_liberty(x, y):
             self.Board[y][x] = EMPTY
